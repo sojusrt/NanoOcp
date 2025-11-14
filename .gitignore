@@ -33,3 +33,5 @@
 Research/OcaRemoteTest/MyAmpRemoteTestApp.swiftpm/.swiftpm/xcode/xcuserdata
 NanoOcp1Demo/Builds
 NanoOcp1Demo/JuceLibraryCode
+submodules
+.DS_Store
