@@ -1,4 +1,4 @@
-/* Copyright (c) 2023, Bernardo Escalona
+/* Copyright (c) 2025, Bernardo Escalona
  *
  * This file is part of NanoOcp <https://github.com/ChristianAhrens/NanoOcp>
  *
@@ -72,9 +72,7 @@ struct Ocp1CommandDefinition
     /**
      * Struct destructor.
      */
-    virtual ~Ocp1CommandDefinition()
-    {
-    }
+    virtual ~Ocp1CommandDefinition() = default;
 
     /**
      * Generates a Ocp1CommandDefinition for a typical AddSubscription command.
@@ -127,12 +125,12 @@ struct Ocp1CommandDefinition
     }
 
 
-    std::uint32_t m_targetOno;
-    std::uint16_t m_propertyType;
-    std::uint16_t m_propertyDefLevel;
-    std::uint16_t m_propertyIndex;
-    std::uint8_t m_paramCount;
-    std::vector<std::uint8_t> m_parameterData;
+    std::uint32_t m_targetOno;                  // Target ONo of the command.
+    std::uint16_t m_propertyType;               // Property type of the command, as a Ocp1DataType.
+    std::uint16_t m_propertyDefLevel;           // Level of the property definition within the AES70 class hierarchy.
+    std::uint16_t m_propertyIndex;              // Index of the property within its AES70 class definition.
+    std::uint8_t m_paramCount;                  // Number of parameters contained in m_parameterData.
+    std::vector<std::uint8_t> m_parameterData;  // Parameter data for the command.
 };
 
 
@@ -167,9 +165,7 @@ public:
     /**
      * Class destructor.
      */
-    virtual ~Ocp1Header()
-    {
-    }
+    virtual ~Ocp1Header() = default;
 
     /**
      * Gets the type of the OCA message. (i.e. Notification, KeepAlive, etc).
@@ -261,9 +257,7 @@ public:
     /**
      * Class destructor.
      */
-    virtual ~Ocp1Message()
-    {
-    }
+    virtual ~Ocp1Message() = default;
 
     /**
      * Gets the type of the OCA message. (i.e. Notification, KeepAlive, etc).
@@ -304,7 +298,8 @@ public:
     /**
      * Factory method which creates a new Ocp1Message object based on a MemoryBlock.
      * 
-     * TODO
+     * @param[in] receivedData    MemoryBlock containing the received OCA message.
+     * @return  A unique pointer to the unmarshaled Ocp1Message object.
      */
     static std::unique_ptr<Ocp1Message> UnmarshalOcp1Message(const juce::MemoryBlock& receivedData);
 
@@ -312,13 +307,16 @@ public:
     /**
      * Factory method which creates a new Ocp1Message object based on a vector<std::uint8_t>.
      *
-     * TODO
+     * @param[in] receivedData    Vector containing the received OCA message.
+     * @return  A unique pointer to the unmarshaled Ocp1Message object.
      */
     static std::unique_ptr<Ocp1Message> UnmarshalOcp1Message(const std::vector<std::uint8_t>& receivedData);
+
+
 protected:
-    Ocp1Header                  m_header;           // TODO
-    std::vector<std::uint8_t>   m_parameterData;
-    static std::uint32_t        m_nextHandle;
+    Ocp1Header                  m_header;           // OCA message header.
+    std::vector<std::uint8_t>   m_parameterData;    // Parameter data contained by the message.
+    static std::uint32_t        m_nextHandle;       // Static variable to generate unique command handles.
 };
 
 
@@ -338,6 +336,7 @@ public:
                                 std::uint8_t paramCount,
                                 const std::vector<std::uint8_t>& parameterData)
         : Ocp1Message(static_cast<std::uint8_t>(CommandResponseRequired), parameterData),
+            m_handle(0),
             m_targetOno(targetOno),
             m_methodDefLevel(methodDefLevel),
             m_methodIndex(methodIndex),
@@ -376,9 +375,7 @@ public:
     /**
      * Class destructor.
      */
-    ~Ocp1CommandResponseRequired() override
-    {
-    }
+    ~Ocp1CommandResponseRequired() override = default;
 
     /**
      * Override the automatically assigned command handle with a manually defined one.
@@ -415,11 +412,11 @@ public:
     std::vector<std::uint8_t> GetSerializedData() override;
 
 protected:
-    std::uint32_t               m_handle;           // TODO
-    std::uint32_t               m_targetOno;
-    std::uint16_t               m_methodDefLevel;
-    std::uint16_t               m_methodIndex;
-    std::uint8_t                m_paramCount;
+    std::uint32_t               m_handle;           // Handle of the command.
+    std::uint32_t               m_targetOno;        // Target ONo of the command.
+    std::uint16_t               m_methodDefLevel;   // Level of the method definition within the AES70 class hierarchy.
+    std::uint16_t               m_methodIndex;      // Index of the method within its AES70 class definition.
+    std::uint8_t                m_paramCount;       // Number of parameters contained in the command.
 };
 
 
@@ -446,9 +443,7 @@ public:
     /**
      * Class destructor.
      */
-    ~Ocp1Response() override
-    {
-    }
+    ~Ocp1Response() override = default;
 
     /**
      * Gets the handle of the OCA response.
@@ -537,9 +532,7 @@ public:
     /**
      * Class destructor.
      */
-    ~Ocp1Notification() override
-    {
-    }
+    ~Ocp1Notification() override = default;
 
     /**
      * Gets the number of parameters contained in this Notification.
@@ -554,7 +547,7 @@ public:
     /**
      * Helper method which matches this notification to a given object definition.
      * 
-     * @param[in] TODO
+     * @param[in] def   Object definition to match against.
      * @return  True if this notification was triggered by the given object.
      */
     bool MatchesObject(const Ocp1CommandDefinition* def) const
@@ -569,9 +562,9 @@ public:
     std::vector<std::uint8_t> GetSerializedData() override;
 
 protected:
-    std::uint32_t               m_emitterOno;               // TODO
-    std::uint16_t               m_emitterPropertyDefLevel;
-    std::uint16_t               m_emitterPropertyIndex;
+    std::uint32_t               m_emitterOno;               // ONo of the object whose property changed, triggering this notification.
+    std::uint16_t               m_emitterPropertyDefLevel;  // Level of the property definition within the AES70 class hierarchy.
+    std::uint16_t               m_emitterPropertyIndex;     // Index of the property within its AES70 class definition.
 
     /**
      * Number of parameters contained in this Notification.
@@ -599,9 +592,7 @@ public:
     /**
      * Class destructor.
      */
-    ~Ocp1KeepAlive() override
-    {
-    }
+    ~Ocp1KeepAlive() override = default;
 
     /**
      * Get this KeepAlive message's heartbeat time.
