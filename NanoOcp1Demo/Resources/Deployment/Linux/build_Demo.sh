@@ -31,7 +31,7 @@ cd "../../../../../../NanoOcp1Demo"
 
 # export projucer project
 echo Export Projucer Project
-"$ProjucerBinPath" --resave "$JucerProjectPath"
+"$ProjucerBinPath" --resave "$JucerProjectPath" --fix-missing-dependencies
 
 # start building the project
 echo Build the project
