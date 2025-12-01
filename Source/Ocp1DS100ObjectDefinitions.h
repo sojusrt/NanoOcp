@@ -47,6 +47,8 @@ static constexpr BoxAndObjNo Error_GnrlErr      = 0x01;
 static constexpr BoxAndObjNo Error_ErrorText    = 0x03;
 
 static constexpr BoxAndObjNo MatrixSettings_Box                     = 0x02;
+static constexpr BoxAndObjNo MatrixSettings_PositioningEnable       = 0x02;
+static constexpr BoxAndObjNo MatrixSettings_ReverbEnable            = 0x03;
 static constexpr BoxAndObjNo MatrixSettings_ReverbRoomId            = 0x0a;
 static constexpr BoxAndObjNo MatrixSettings_ReverbPredelayFactor    = 0x14;
 static constexpr BoxAndObjNo MatrixSettings_ReverbRearLevel         = 0x15;
@@ -891,6 +893,34 @@ struct dbOcaObjectDef_MatrixOutput_OSP : Ocp1CommandDefinition
             OCP1DATATYPE_BOOLEAN,   // Value type
             DefLevel_OcaBooleanSensor,
             1)                      // Prop_Reading
+    {
+    }
+};
+
+/**
+ * MatrixSettings_PositioningEnable
+ */
+struct dbOcaObjectDef_MatrixSettings_PositioningEnable : Ocp1CommandDefinition
+{
+    dbOcaObjectDef_MatrixSettings_PositioningEnable()
+        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, 0x00, MatrixSettings_Box, MatrixSettings_PositioningEnable), // ONO of MatrixSettings_PositioningEnable
+            OCP1DATATYPE_UINT16,    // Value type
+            DefLevel_OcaSwitch,
+            1)                      // Prop_Position
+    {
+    }
+};
+
+/**
+ * MatrixSettings_ReverbEnable
+ */
+struct dbOcaObjectDef_MatrixSettings_ReverbEnable : Ocp1CommandDefinition
+{
+    dbOcaObjectDef_MatrixSettings_ReverbEnable()
+        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, 0x00, MatrixSettings_Box, MatrixSettings_ReverbEnable), // ONO of MatrixSettings_ReverbEnable
+            OCP1DATATYPE_UINT16,    // Value type
+            DefLevel_OcaSwitch,
+            1)                      // Prop_Position
     {
     }
 };
