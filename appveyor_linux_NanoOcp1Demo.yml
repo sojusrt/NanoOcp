@@ -3,7 +3,9 @@ branches:
   only:
   - main
   - develop
-image: Ubuntu
+image: Ubuntu2404
+shallow_clone: true
+elevation: true
 init:
 # C++ compiler:           g++-11 gcc-11 make
 # juce_core:              libcurl4-openssl-dev
@@ -13,17 +15,17 @@ init:
 # juce_gui_basics:        libx11-dev libxcomposite-dev libxcursor-dev libxext-dev libxinerama-dev libxrandr-dev libxrender-dev libwebkit2gtk-4.0-dev
 # juce_opengl:            libglu1-mesa-dev mesa-common-dev
 - sh: >-
-    yes | sudo apt-get update
+    apt-get update -y
     
-    yes | sudo apt install  g++-11 gcc-11 make  \
-                            libcurl4-openssl-dev  \
-                            libfreetype6-dev libfontconfig1-dev  \
-                            libasound2-dev libjack-jackd2-dev  \
-                            ladspa-sdk  \
-                            libx11-dev libxcomposite-dev libxcursor-dev libxext-dev libxinerama-dev libxrandr-dev libxrender-dev libwebkit2gtk-4.0-dev  \
-                            libglu1-mesa-dev mesa-common-dev
+    apt install -y g++-11 gcc-11 make  \
+                          libcurl4-openssl-dev  \
+                          libfreetype6-dev libfontconfig1-dev  \
+                          libasound2-dev libjack-jackd2-dev  \
+                          ladspa-sdk  \
+                          libx11-dev libxcomposite-dev libxcursor-dev libxext-dev libxinerama-dev libxrandr-dev libxrender-dev libwebkit2gtk-4.0-dev  \
+                          libglu1-mesa-dev mesa-common-dev
         
-    yes | sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 100 --slave /usr/bin/g++ g++ /usr/bin/g++-11 --slave /usr/bin/gcov gcov /usr/bin/gcov-11
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 100 --slave /usr/bin/g++ g++ /usr/bin/g++-11 --slave /usr/bin/gcov gcov /usr/bin/gcov-11
     
 install:
 - sh: >-
@@ -34,7 +36,7 @@ build_script:
 - sh: >-
     cd NanoOcp1Demo/Resources/Deployment/Linux
 
-    sudo chmod +x build_Demo.sh
+    chmod +x build_Demo.sh
 
     ./build_Demo.sh
 notifications:
