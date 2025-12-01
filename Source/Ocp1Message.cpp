@@ -250,12 +250,8 @@ std::unique_ptr<Ocp1Message> Ocp1Message::UnmarshalOcp1Message(const std::vector
                 if (propIdx == 0)
                     return nullptr;
 
-                std::vector<std::uint8_t> parameterData;
-                parameterData.reserve(newValueSize);
-                for (std::uint32_t i = 0; i < newValueSize; i++) // TODO: check if this can be optimized via memcpy
-                {
-                    parameterData.push_back(receivedData[37 + contextSize + i]);
-                }
+                const auto parameterData = std::vector<std::uint8_t>(receivedData.begin() + 37 + contextSize, 
+                                                                     receivedData.begin() + 37 + contextSize + newValueSize);
 
                 return std::make_unique<Ocp1Notification>(emitterOno, propDefLevel, propIdx, paramCount, parameterData);
             }
@@ -275,15 +271,13 @@ std::unique_ptr<Ocp1Message> Ocp1Message::UnmarshalOcp1Message(const std::vector
                 const std::uint8_t status = receivedData[18];
                 const std::uint8_t paramCount = receivedData[19];
 
-                std::vector<std::uint8_t> parameterData;
-                if (parameterDataLength > 0)
-                {
-                    parameterData.reserve(parameterDataLength);
-                    for (std::uint32_t i = 0; i < parameterDataLength; i++)
-                    {
-                        parameterData.push_back(receivedData[20 + i]);
-                    }
-                }
+                const auto parameterData = [&receivedData, &parameterDataLength]() {
+                    if (parameterDataLength == 0)
+                        return std::vector<std::uint8_t>{};
+                    else
+                        return std::vector<std::uint8_t>(receivedData.begin() + 20, receivedData.end());
+                    }();
+                jassert(parameterData.size() == parameterDataLength);
 
                 return std::make_unique<Ocp1Response>(handle, status, paramCount, parameterData);
             }
@@ -297,7 +291,7 @@ std::unique_ptr<Ocp1Message> Ocp1Message::UnmarshalOcp1Message(const std::vector
 
         case Command:
             {
-                // TODO
+                // Not used in this implementation. See CommandResponseRequired instead.
                 return nullptr;
             }
         case CommandResponseRequired:
