@@ -18,6 +18,7 @@
 
 #include "Variant.h"
 #include <assert.h>
+#include <sstream>
 
 
 namespace NanoOcp1
@@ -646,7 +647,32 @@ std::array<std::float_t, 3> Variant::ToPosition(bool* pOk) const
     return ret;
 }
 
+std::string Variant::ToPositionString(bool* pOk) const
+{
+    bool ok;
+    std::string ret;
+
+    auto pos = ToPosition(&ok);
+    if (ok)
+    {
+        std::stringstream ss;
+        ss << pos[0] << ", " << pos[1] << ", " << pos[2];
+
+        ret = std::string(ss.str());
+    }
+
+    if (pOk != nullptr)
+        *pOk = ok;
+
+    return ret;
+}
+
 std::array<std::float_t, 6> Variant::ToPositionAndRotation(bool* pOk) const
+{
+    return ToAimingAndPosition(pOk);
+}
+
+std::array<std::float_t, 6> Variant::ToAimingAndPosition(bool* pOk) const
 {
     std::array<std::float_t, 6> ret{ 0.0f };
 
@@ -659,25 +685,46 @@ std::array<std::float_t, 6> Variant::ToPositionAndRotation(bool* pOk) const
     }
 
     const auto& data = std::get<std::vector<std::uint8_t>>(m_value);
-    bool ok = (data.size() == 24); // Value contains 6 floats: x, y, z, horAngle, vertAngle, rotAngle.
+    bool ok = (data.size() == 24); // Value contains 6 floats: horAngle, vertAngle, rotAngle, x, y, z.
     
     if (ok)
-        ret[0] = NanoOcp1::DataToFloat(data, &ok); // x
+        ret[0] = NanoOcp1::DataToFloat(data, &ok); // hor
 
     if (ok)
-        ret[1] = NanoOcp1::DataToFloat(std::vector<std::uint8_t>(data.data() + 4, data.data() + 8), &ok); // y
+        ret[1] = NanoOcp1::DataToFloat(std::vector<std::uint8_t>(data.data() + 4, data.data() + 8), &ok); // ver
 
     if (ok)
-        ret[2] = NanoOcp1::DataToFloat(std::vector<std::uint8_t>(data.data() + 8, data.data() + 12), &ok); // z
+        ret[2] = NanoOcp1::DataToFloat(std::vector<std::uint8_t>(data.data() + 8, data.data() + 12), &ok); // rot
 
     if (ok)
-        ret[3] = NanoOcp1::DataToFloat(std::vector<std::uint8_t>(data.data() + 12, data.data() + 16), &ok); // hor
+        ret[3] = NanoOcp1::DataToFloat(std::vector<std::uint8_t>(data.data() + 12, data.data() + 16), &ok); // x
 
     if (ok)
-        ret[4] = NanoOcp1::DataToFloat(std::vector<std::uint8_t>(data.data() + 16, data.data() + 20), &ok); // ver
+        ret[4] = NanoOcp1::DataToFloat(std::vector<std::uint8_t>(data.data() + 16, data.data() + 20), &ok); // y
 
     if (ok)
-        ret[5] = NanoOcp1::DataToFloat(std::vector<std::uint8_t>(data.data() + 20, data.data() + 24), &ok); // rot
+        ret[5] = NanoOcp1::DataToFloat(std::vector<std::uint8_t>(data.data() + 20, data.data() + 24), &ok); // z
+
+    if (pOk != nullptr)
+        *pOk = ok;
+
+    return ret;
+}
+
+std::string Variant::ToAimingAndPositionString(bool* pOk) const
+{
+    bool ok;
+    std::string ret;
+
+    auto pos = ToAimingAndPosition(&ok);
+    if (ok)
+    {
+        std::stringstream ss;
+        ss << pos[0] << ", " << pos[1] << ", " << pos[2] << ", " <<
+              pos[3] << ", " << pos[4] << ", " << pos[5];
+
+        ret = std::string(ss.str());
+    }
 
     if (pOk != nullptr)
         *pOk = ok;
@@ -750,12 +797,13 @@ std::vector<std::string> Variant::ToStringVector(bool* pOk) const
     {
         stringVector.reserve(static_cast<size_t>(listSize));
         std::size_t readPos(2); // Start after the OcaList size bytes
-        while (readPos < data.size() && ok)
+        while (readPos + 2 <= data.size() && ok)
         {
             std::vector<std::uint8_t> stringLenData(data.data() + readPos, data.data() + readPos + 2);
             auto stringLen = NanoOcp1::DataToUint16(stringLenData, &ok);
             readPos += 2;
 
+            ok = ok && (readPos + stringLen <= data.size());
             if (ok)
             {
                 stringVector.push_back(std::string(data.data() + readPos, data.data() + readPos + stringLen));
