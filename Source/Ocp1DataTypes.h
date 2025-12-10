@@ -25,6 +25,10 @@
 namespace NanoOcp1
 {
 
+/// a replacement for juce::MemoryBlock
+using ByteVector = std::vector<std::uint8_t>;
+
+
 /** 
  * Enumeration that describes all available base data types. 
  * Same values as OcaBaseDataType in OcaBaseDataTypes.h

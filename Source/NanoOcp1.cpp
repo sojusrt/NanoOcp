@@ -109,7 +109,7 @@ bool NanoOcp1Client::isRunning()
     return m_running;
 }
 
-bool NanoOcp1Client::sendData(const juce::MemoryBlock& data)
+bool NanoOcp1Client::sendData(const ByteVector& data)
 {
     if (!isConnected())
         return false;
@@ -177,7 +177,7 @@ bool NanoOcp1Server::stop()
         return true;
 }
 
-bool NanoOcp1Server::sendData(const juce::MemoryBlock& data)
+bool NanoOcp1Server::sendData(const ByteVector& data)
 {
     if (!m_activeConnection)
         return false;

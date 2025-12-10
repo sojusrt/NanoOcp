@@ -170,10 +170,9 @@ std::uint32_t Ocp1Header::CalculateMessageSize(std::uint8_t msgType, size_t para
 // OCA_INVALID_SESSIONID  == 0, OCA_LOCAL_SESSIONID == 1
 std::uint32_t Ocp1Message::m_nextHandle = 2;
 
-juce::MemoryBlock Ocp1Message::GetMemoryBlock()
+ByteVector Ocp1Message::GetMemoryBlock()
 {
-    auto serializedData = GetSerializedData();
-    return juce::MemoryBlock((const char*)serializedData.data(), serializedData.size());
+    return GetSerializedData();
 }
 
 std::unique_ptr<Ocp1Message> Ocp1Message::UnmarshalOcp1Message(const juce::MemoryBlock& receivedData)
