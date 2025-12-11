@@ -74,8 +74,8 @@ class NanoOcp1Client : public NanoOcp1Base, public Ocp1Connection, public juce::
 {
 public:
     //==============================================================================
-    NanoOcp1Client(const bool callbacksOnMessageThread);
-    NanoOcp1Client(const juce::String& address, const int port, const bool callbacksOnMessageThread);
+    NanoOcp1Client(const bool callbacksOnMessageThread, const juce::Thread::Priority threadPriority=juce::Thread::Priority::normal);
+    NanoOcp1Client(const juce::String& address, const int port, const bool callbacksOnMessageThread, const juce::Thread::Priority threadPriority=juce::Thread::Priority::normal);
     ~NanoOcp1Client() override;
 
     //==============================================================================
@@ -104,8 +104,8 @@ class NanoOcp1Server : public NanoOcp1Base, public Ocp1ConnectionServer
 {
 public:
     //==============================================================================
-    NanoOcp1Server(const bool callbacksOnMessageThread);
-    NanoOcp1Server(const juce::String& address, const int port, const bool callbacksOnMessageThread);
+    NanoOcp1Server(const bool callbacksOnMessageThread, const juce::Thread::Priority threadPriority=juce::Thread::Priority::normal);
+    NanoOcp1Server(const juce::String& address, const int port, const bool callbacksOnMessageThread, const juce::Thread::Priority threadPriority=juce::Thread::Priority::normal);
     ~NanoOcp1Server() override;
 
     //==============================================================================
@@ -123,6 +123,8 @@ private:
     //==============================================================================
     std::unique_ptr<NanoOcp1Client> m_activeConnection;
     bool m_callbacksOnMessageThread{ true };
+    
+    juce::Thread::Priority m_threadPriority;
 };
 
 }

@@ -30,10 +30,10 @@ namespace NanoOcp1
 namespace DS100
 {
 
-static constexpr std::uint16_t MaxInputChannelCount = 64;
-static constexpr std::uint16_t MaxOutputChannelCount = 64;
-static constexpr std::uint16_t MaxReverbZones = 4;
-static constexpr std::uint16_t MaxFunctionGroups = 16;
+static constexpr BoxAndObjNo Fixed_Box              = 0x00;
+static constexpr BoxAndObjNo Fixed_HardwareVariant  = 0x02;
+static constexpr BoxAndObjNo Fixed_SerNr            = 0x0a;
+static constexpr BoxAndObjNo Fixed_GUID             = 0x0f;
 
 static constexpr BoxAndObjNo Settings_Box           = 0x01;
 static constexpr BoxAndObjNo Settings_DeviceName    = 0x0d;
@@ -47,6 +47,8 @@ static constexpr BoxAndObjNo Error_GnrlErr      = 0x01;
 static constexpr BoxAndObjNo Error_ErrorText    = 0x03;
 
 static constexpr BoxAndObjNo MatrixSettings_Box                     = 0x02;
+static constexpr BoxAndObjNo MatrixSettings_PositioningEnable       = 0x02;
+static constexpr BoxAndObjNo MatrixSettings_ReverbEnable            = 0x03;
 static constexpr BoxAndObjNo MatrixSettings_ReverbRoomId            = 0x0a;
 static constexpr BoxAndObjNo MatrixSettings_ReverbPredelayFactor    = 0x14;
 static constexpr BoxAndObjNo MatrixSettings_ReverbRearLevel         = 0x15;
@@ -73,8 +75,10 @@ static constexpr BoxAndObjNo MatrixInput_DelayEnable        = 0x04;
 static constexpr BoxAndObjNo MatrixInput_EqEnable           = 0x05;
 static constexpr BoxAndObjNo MatrixInput_Polarity           = 0x06;
 static constexpr BoxAndObjNo MatrixInput_ChannelName        = 0x07;
+static constexpr BoxAndObjNo MatrixInput_LevelMeterIn       = 0x08;
 static constexpr BoxAndObjNo MatrixInput_LevelMeterPreMute  = 0x09;
 static constexpr BoxAndObjNo MatrixInput_LevelMeterPostMute = 0x0a;
+static constexpr BoxAndObjNo MatrixInput_ISP                = 0x0b;
 static constexpr BoxAndObjNo MatrixInput_ReverbSendGain     = 0x0d;
 
 static constexpr BoxAndObjNo MatrixNode_Box                 = 0x07;
@@ -91,16 +95,18 @@ static constexpr BoxAndObjNo MatrixOutput_DelayEnable           = 0x04;
 static constexpr BoxAndObjNo MatrixOutput_EqEnable              = 0x05;
 static constexpr BoxAndObjNo MatrixOutput_Polarity              = 0x06;
 static constexpr BoxAndObjNo MatrixOutput_ChannelName           = 0x07;
+static constexpr BoxAndObjNo MatrixOutput_LevelMeterIn          = 0x08;
 static constexpr BoxAndObjNo MatrixOutput_LevelMeterPreMute     = 0x09;
 static constexpr BoxAndObjNo MatrixOutput_LevelMeterPostMute    = 0x0a;
+static constexpr BoxAndObjNo MatrixOutput_OSP                   = 0x0b;
 
-static constexpr BoxAndObjNo Positioning_Box                = 0x0d;
-static constexpr BoxAndObjNo Positioning_Source_Position    = 0x02;
-static constexpr BoxAndObjNo Positioning_Source_Enable      = 0x03;
-static constexpr BoxAndObjNo Positioning_Source_Spread      = 0x04;
-static constexpr BoxAndObjNo Positioning_Speaker_Group      = 0x06;
-static constexpr BoxAndObjNo Positioning_Speaker_Position   = 0x07;
-static constexpr BoxAndObjNo Positioning_Source_DelayMode   = 0x0b;
+static constexpr BoxAndObjNo Positioning_Source_Box                 = 0x0d;
+static constexpr BoxAndObjNo Positioning_Source_Position            = 0x02;
+static constexpr BoxAndObjNo Positioning_Source_Enable              = 0x03;
+static constexpr BoxAndObjNo Positioning_Source_Spread              = 0x04;
+static constexpr BoxAndObjNo Positioning_Source_Speaker_Group       = 0x06; // deprecated starting with GUID DB000CD0
+static constexpr BoxAndObjNo Positioning_Source_Speaker_Position    = 0x07; // deprecated starting with GUID DB000CD0
+static constexpr BoxAndObjNo Positioning_Source_DelayMode           = 0x0b;
 
 static constexpr BoxAndObjNo FunctionGroup_Box            = 0x0e;
 static constexpr BoxAndObjNo FunctionGroup_Name           = 0x01;
@@ -125,8 +131,54 @@ static constexpr BoxAndObjNo SoundObjectRouting_Box     = 0x18;
 static constexpr BoxAndObjNo SoundObjectRouting_Mute    = 0x01;
 static constexpr BoxAndObjNo SoundObjectRouting_Gain    = 0x02;
 
+static constexpr BoxAndObjNo Positioning_Speaker_Box        = 0x1a; // introduced with GUID DB000CD0
+static constexpr BoxAndObjNo Positioning_Speaker_Group      = 0x01; // introduced with GUID DB000CD0
+static constexpr BoxAndObjNo Positioning_Speaker_Position   = 0x02; // introduced with GUID DB000CD0
+
 static constexpr std::uint32_t  SceneAgentONo   = 0x2714;
 
+
+/**
+ * Fixed_HardwareVariant
+ */
+struct dbOcaObjectDef_Fixed_HardwareVariant : Ocp1CommandDefinition
+{
+    dbOcaObjectDef_Fixed_HardwareVariant()
+        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, 0x00, Fixed_Box, Fixed_HardwareVariant), // ONO of Fixed_HardwareVariant,
+            OCP1DATATYPE_INT32,     // Value type
+            DefLevel_OcaInt32Sensor,
+            1)                      // Prop_Reading
+    {
+    }
+};
+
+/**
+ * Fixed_SerNr
+ */
+struct dbOcaObjectDef_Fixed_SerNr : Ocp1CommandDefinition
+{
+    dbOcaObjectDef_Fixed_SerNr()
+        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, 0x00, Fixed_Box, Fixed_SerNr), // ONO of Fixed_SerNr,
+            OCP1DATATYPE_STRING,    // Value type
+            DefLevel_OcaStringActuator,
+            1)                      // Prop_Setting
+    {
+    }
+};
+
+/**
+ * Fixed_GUID
+ */
+struct dbOcaObjectDef_Fixed_GUID : Ocp1CommandDefinition
+{
+    dbOcaObjectDef_Fixed_GUID()
+        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, 0x00, Fixed_Box, Fixed_GUID), // ONO of Fixed_GUID,
+            OCP1DATATYPE_STRING,    // Value type
+            DefLevel_OcaStringActuator,
+            1)                      // Prop_Setting
+    {
+    }
+};
 
 /**
  * Settings_DeviceName
@@ -344,7 +396,7 @@ struct dbOcaObjectDef_CoordinateMapping_Source_Position : Ocp1CommandDefinition
 struct dbOcaObjectDef_Positioning_Source_Position : Ocp1CommandDefinition
 {
     dbOcaObjectDef_Positioning_Source_Position(std::uint32_t channel)
-        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, channel, Positioning_Box, Positioning_Source_Position), // ONO of Positioning_Source_Position
+        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, channel, Positioning_Source_Box, Positioning_Source_Position), // ONO of Positioning_Source_Position
             OCP1DATATYPE_DB_POSITION, // Value type
             DefLevel_dbOcaPositionAgentDeprecated,
             1)                        // Prop_Position
@@ -358,7 +410,7 @@ struct dbOcaObjectDef_Positioning_Source_Position : Ocp1CommandDefinition
 struct dbOcaObjectDef_Positioning_Source_Enable : Ocp1CommandDefinition
 {
     dbOcaObjectDef_Positioning_Source_Enable(std::uint32_t channel)
-        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, channel, Positioning_Box, Positioning_Source_Enable), // ONO of Positioning_Source_Enable
+        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, channel, Positioning_Source_Box, Positioning_Source_Enable), // ONO of Positioning_Source_Enable
             OCP1DATATYPE_UINT16,    // Value type
             DefLevel_OcaSwitch,
             1)                      // Prop_Position
@@ -372,7 +424,7 @@ struct dbOcaObjectDef_Positioning_Source_Enable : Ocp1CommandDefinition
 struct dbOcaObjectDef_Positioning_Source_Spread : Ocp1CommandDefinition
 {
     dbOcaObjectDef_Positioning_Source_Spread(std::uint32_t channel)
-        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, channel, Positioning_Box, Positioning_Source_Spread), // ONO of Positioning_Source_Spread
+        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, channel, Positioning_Source_Box, Positioning_Source_Spread), // ONO of Positioning_Source_Spread
             OCP1DATATYPE_FLOAT32,           // Value type
             DefLevel_OcaFloat32Actuator,
             1)                              // Prop_Setting
@@ -381,12 +433,12 @@ struct dbOcaObjectDef_Positioning_Source_Spread : Ocp1CommandDefinition
 };
 
 /**
- * Positioning_Speaker_Group
+ * Positioning_Source_Speaker_Group
  */
-struct dbOcaObjectDef_Positioning_Speaker_Group : Ocp1CommandDefinition
+struct dbOcaObjectDef_Positioning_Source_Speaker_Group : Ocp1CommandDefinition
 {
-    dbOcaObjectDef_Positioning_Speaker_Group(std::uint32_t channel)
-        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, channel, Positioning_Box, Positioning_Speaker_Group), // ONO of Positioning_Speaker_Group
+    dbOcaObjectDef_Positioning_Source_Speaker_Group(std::uint32_t channel)
+        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, channel, Positioning_Source_Box, Positioning_Source_Speaker_Group), // ONO of Positioning_Source_Speaker_Group
             OCP1DATATYPE_INT32,             // Value type
             DefLevel_OcaInt32Actuator,
             1)                              // Prop_Setting
@@ -395,12 +447,12 @@ struct dbOcaObjectDef_Positioning_Speaker_Group : Ocp1CommandDefinition
 };
 
 /**
- * Positioning_Speaker_Position
+ * Positioning_Source_Speaker_Position
  */
-struct dbOcaObjectDef_Positioning_Speaker_Position : Ocp1CommandDefinition
+struct dbOcaObjectDef_Positioning_Source_Speaker_Position : Ocp1CommandDefinition
 {
-    dbOcaObjectDef_Positioning_Speaker_Position(std::uint32_t channel)
-        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, channel, Positioning_Box, Positioning_Speaker_Position), // ONO of Positioning_Speaker_Position
+    dbOcaObjectDef_Positioning_Source_Speaker_Position(std::uint32_t channel)
+        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, channel, Positioning_Source_Box, Positioning_Source_Speaker_Position), // ONO of Positioning_Source_Speaker_Position
             OCP1DATATYPE_DB_POSITION, // Value type
             DefLevel_dbOcaSpeakerPositionAgentDeprecated,
             1)                        // Prop_Aiming_and_Position
@@ -414,7 +466,7 @@ struct dbOcaObjectDef_Positioning_Speaker_Position : Ocp1CommandDefinition
 struct dbOcaObjectDef_Positioning_Source_DelayMode : Ocp1CommandDefinition
 {
     dbOcaObjectDef_Positioning_Source_DelayMode(std::uint32_t channel)
-        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, channel, Positioning_Box, Positioning_Source_DelayMode), // ONO of Positioning_Source_DelayMode
+        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, channel, Positioning_Source_Box, Positioning_Source_DelayMode), // ONO of Positioning_Source_DelayMode
             OCP1DATATYPE_UINT16,    // Value type
             DefLevel_OcaSwitch,
             1)                      // Prop_Position
@@ -565,6 +617,20 @@ struct dbOcaObjectDef_MatrixInput_ChannelName : Ocp1CommandDefinition
 };
 
 /**
+ * MatrixInput_LevelMeterIn
+ */
+struct dbOcaObjectDef_MatrixInput_LevelMeterIn : Ocp1CommandDefinition
+{
+    dbOcaObjectDef_MatrixInput_LevelMeterIn(std::uint32_t channel)
+        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, channel, MatrixInput_Box, MatrixInput_LevelMeterIn), // ONO of MatrixInput_LevelMeterIn
+            OCP1DATATYPE_FLOAT32,           // Value type
+            DefLevel_OcaLevelSensor,
+            1)                              // Prop_Level
+    {
+    }
+};
+
+/**
  * MatrixInput_LevelMeterPreMute
  */
 struct dbOcaObjectDef_MatrixInput_LevelMeterPreMute : Ocp1CommandDefinition
@@ -588,6 +654,20 @@ struct dbOcaObjectDef_MatrixInput_LevelMeterPostMute : Ocp1CommandDefinition
             OCP1DATATYPE_FLOAT32,           // Value type
             DefLevel_OcaLevelSensor,
             1)                              // Prop_Level
+    {
+    }
+};
+
+/**
+ * MatrixInput_ISP
+ */
+struct dbOcaObjectDef_MatrixInput_ISP : Ocp1CommandDefinition
+{
+    dbOcaObjectDef_MatrixInput_ISP(std::uint32_t channel)
+        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, channel, MatrixInput_Box, MatrixInput_ISP), // ONO of MatrixInput_ISP,
+            OCP1DATATYPE_BOOLEAN,   // Value type
+            DefLevel_OcaBooleanSensor,
+            1)                      // Prop_Reading
     {
     }
 };
@@ -762,6 +842,20 @@ struct dbOcaObjectDef_MatrixOutput_ChannelName : Ocp1CommandDefinition
 };
 
 /**
+ * MatrixOutput_LevelMeterIn
+ */
+struct dbOcaObjectDef_MatrixOutput_LevelMeterIn : Ocp1CommandDefinition
+{
+    dbOcaObjectDef_MatrixOutput_LevelMeterIn(std::uint32_t channel)
+        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, channel, MatrixOutput_Box, MatrixOutput_LevelMeterIn), // ONO of MatrixOutput_LevelMeterIn
+            OCP1DATATYPE_FLOAT32,           // Value type
+            DefLevel_OcaLevelSensor,
+            1)                              // Prop_Level
+    {
+    }
+};
+
+/**
  * MatrixOutput_LevelMeterPreMute
  */
 struct dbOcaObjectDef_MatrixOutput_LevelMeterPreMute : Ocp1CommandDefinition
@@ -785,6 +879,48 @@ struct dbOcaObjectDef_MatrixOutput_LevelMeterPostMute : Ocp1CommandDefinition
             OCP1DATATYPE_FLOAT32,           // Value type
             DefLevel_OcaLevelSensor,
             1)                              // Prop_Level
+    {
+    }
+};
+
+/**
+ * MatrixOutput_OSP
+ */
+struct dbOcaObjectDef_MatrixOutput_OSP : Ocp1CommandDefinition
+{
+    dbOcaObjectDef_MatrixOutput_OSP(std::uint32_t channel)
+        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, channel, MatrixOutput_Box, MatrixOutput_OSP), // ONO of MatrixOutput_OSP,
+            OCP1DATATYPE_BOOLEAN,   // Value type
+            DefLevel_OcaBooleanSensor,
+            1)                      // Prop_Reading
+    {
+    }
+};
+
+/**
+ * MatrixSettings_PositioningEnable
+ */
+struct dbOcaObjectDef_MatrixSettings_PositioningEnable : Ocp1CommandDefinition
+{
+    dbOcaObjectDef_MatrixSettings_PositioningEnable()
+        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, 0x00, MatrixSettings_Box, MatrixSettings_PositioningEnable), // ONO of MatrixSettings_PositioningEnable
+            OCP1DATATYPE_UINT16,    // Value type
+            DefLevel_OcaSwitch,
+            1)                      // Prop_Position
+    {
+    }
+};
+
+/**
+ * MatrixSettings_ReverbEnable
+ */
+struct dbOcaObjectDef_MatrixSettings_ReverbEnable : Ocp1CommandDefinition
+{
+    dbOcaObjectDef_MatrixSettings_ReverbEnable()
+        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, 0x00, MatrixSettings_Box, MatrixSettings_ReverbEnable), // ONO of MatrixSettings_ReverbEnable
+            OCP1DATATYPE_UINT16,    // Value type
+            DefLevel_OcaSwitch,
+            1)                      // Prop_Position
     {
     }
 };
@@ -1031,6 +1167,36 @@ struct dbOcaObjectDef_SoundObjectRouting_Gain : Ocp1CommandDefinition
     {
     }
 };
+
+
+/**
+ * Positioning_Speaker_Group
+ */
+struct dbOcaObjectDef_Positioning_Speaker_Group : Ocp1CommandDefinition
+{
+    dbOcaObjectDef_Positioning_Speaker_Group(std::uint32_t channel)
+        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, channel, Positioning_Speaker_Box, Positioning_Speaker_Group), // ONO of Positioning_Speaker_Group
+            OCP1DATATYPE_INT32,             // Value type
+            DefLevel_OcaInt32Actuator,
+            1)                              // Prop_Setting
+    {
+    }
+};
+
+/**
+ * Positioning_Speaker_Position
+ */
+struct dbOcaObjectDef_Positioning_Speaker_Position : Ocp1CommandDefinition
+{
+    dbOcaObjectDef_Positioning_Speaker_Position(std::uint32_t channel)
+        : Ocp1CommandDefinition(GetONoTy2(0x02, 0x00, channel, Positioning_Speaker_Box, Positioning_Speaker_Position), // ONO of Positioning_Speaker_Position
+            OCP1DATATYPE_DB_POSITION, // Value type
+            DefLevel_dbOcaSpeakerPositionAgentDeprecated,
+            1)                        // Prop_Aiming_and_Position
+    {
+    }
+};
+
 
 /**
  * SceneAgent

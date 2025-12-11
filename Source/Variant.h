@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include <cstdint>          //< USE std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t in GCC-13
 #include <variant>          //< USE std::variant
 #include <array>            //< USE std::array
 #include "Ocp1DataTypes.h"  //< USE NanoOcp1::Ocp1DataType
@@ -32,7 +33,7 @@ namespace NanoOcp1
  *  - Mutability: as opposed to a pure std::variant, the Variant can be constructed with a given type
  *    and be later interpreted as a different type using the available To<T> conversion methods.
  *    Note that these type conversions are mostly only supported between primitive types.
- *  - Marshaling: A Variant can be directly created (unmarshaled) from a byte vector, 
+ *  - Marshaling: A Variant can be directly created (unmarshaled) from a byte vector,
  *    and it can also be marshaled into its byte-vector representation using the ToParamData method.
  */
 class Variant
@@ -59,7 +60,7 @@ public:
      * Unmarshaling constructor.
      * Deserializes the data from the passed byte vector into the object using the passed type.
      *
-     * @param[in] data  Byte vector representing the parameter data obtained by i.e. an OCP1 Notification or Response. 
+     * @param[in] data  Byte vector representing the parameter data obtained by i.e. an OCP1 Notification or Response.
      * @param[in] type  Data type of the Ocp1CommandDefinition associated with that OCP1 message.
      */
     Variant(const std::vector<std::uint8_t>& data, Ocp1DataType type = OCP1DATATYPE_BLOB);
@@ -71,7 +72,7 @@ public:
     /**
      * Check if this Variant has a valid value and type, i.e. different than the default TypeNone (std::monostate).
      * @note A Variant has no value or type per default.
-     * 
+     *
      * @return True if this Variant is valid.
      */
     bool IsValid() const;
@@ -85,7 +86,7 @@ public:
 
     /**
      * Marshal the Variant's value into a byte-vector representation, based on the desired type.
-     * 
+     *
      * @param[in] type  Data type to unmarshal the Varaiant as.
      *                  If this is left as the default (NONE), the Variant's native type will be used.
      * @param[in] pOk   Optional parameter to verify if the conversion was successful.
@@ -93,7 +94,7 @@ public:
     std::vector<std::uint8_t> ToParamData(Ocp1DataType type = OCP1DATATYPE_NONE, bool* pOk = nullptr) const;
 
     /**
-     * Type conversion methods. 
+     * Type conversion methods.
      * Note that some of these conversions can leas to signedness change or data loss.
      */
 
@@ -110,27 +111,50 @@ public:
     /**
      * Convenience helper method to extract x, y, and z float values from a Variant.
      * The Variant should internally contain the values as 3 x 4 bytes.
-     * 
+     *
      * @param[in] pOk   Optional parameter to verify if the conversion was successful.
      * @return  The contained x, y, and z values.
      */
     std::array<std::float_t, 3> ToPosition(bool* pOk = nullptr) const;
 
     /**
-     * Convenience helper method to extract x, y, z, horizontal angle, vertical angle
-     * and rotation angle float values from a Variant.
+     * Calls ToPosition and returns a human-readable string with the result.
+     *
+     * @param[in] pOk   Optional parameter to verify if the ToPosition call was successful.
+     * @return  A string in the format "x, y, z".
+     */
+    std::string ToPositionString(bool* pOk = nullptr) const;
+
+    /**
+     * Convenience helper method to extract x, y, z, horizontal angle (yaw),
+     * vertical angle (pitch) and rotation angle (roll) float values from a Variant.
+     * @note The aiming angles are unmarshaled first and the position second, to keep in line
+     *       with the CdbOcaAimingAndPosition::Unmarshal method.
      *
      * @param[in] pOk   Optional parameter to verify if the conversion was successful.
-     * @return  The contained x, y, z, hor, ver, and rot values.
+     * @return  The contained values in the order: hor, ver, rot, x, y, z.
      */
+    std::array<std::float_t, 6> ToAimingAndPosition(bool* pOk = nullptr) const;
+
+    [[deprecated("Use ToAimingAndPosition instead, this method will be removed in the future. "
+      "NOTE: The output of both methods is identical, but the new method has a more consistent name.")]]
     std::array<std::float_t, 6> ToPositionAndRotation(bool* pOk = nullptr) const;
+
+    /**
+     * Calls ToAimingAndPosition and returns a human-readable string with the result.
+     *
+     * @param[in] pOk   Optional parameter to verify if the ToAimingAndPosition call
+     *                  was successful.
+     * @return  A string in the format: "hor, ver, rot, x, y, z".
+     */
+    std::string ToAimingAndPositionString(bool* pOk = nullptr) const;
 
     /**
      * Convenience helper method to extract a std::vector<bool> from a from a Variant.
      * The Variant's contents need to be marshalled as an OcaList<OcaBoolean>.
      *
      * @param[in] pOk   Optional parameter to verify if the conversion was successful.
-     * @return  The resulting OcaList<OcaBoolean> as a std::vector<bool>. 
+     * @return  The resulting OcaList<OcaBoolean> as a std::vector<bool>.
      */
     std::vector<bool> ToBoolVector(bool* pOk = nullptr) const;
 
@@ -147,7 +171,7 @@ public:
 protected:
     /**
      * Marshals the Variant into a byte vector using a format based on the Variant's native type.
-     * 
+     *
      * @param[in] pOk   Optional parameter to verify if the conversion was successful.
      * @return  The Variant's byte vector representation.
      */
