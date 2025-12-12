@@ -55,13 +55,13 @@ public:
     virtual bool sendData(const ByteVector& data) = 0;
 
     //==============================================================================
-    std::function<bool(const juce::MemoryBlock&)> onDataReceived;
+    std::function<bool(const ByteVector&)> onDataReceived;
     std::function<void()> onConnectionEstablished;
     std::function<void()> onConnectionLost;
 
 protected:
     //==============================================================================
-    bool processReceivedData(const juce::MemoryBlock& data);
+    bool processReceivedData(const ByteVector& data);
 
 private:
     //==============================================================================
@@ -89,7 +89,7 @@ public:
     //==============================================================================
     void connectionMade() override;
     void connectionLost() override;
-    void messageReceived(const juce::MemoryBlock& message) override;
+    void messageReceived(const ByteVector& message) override;
 
 protected:
     //==============================================================================

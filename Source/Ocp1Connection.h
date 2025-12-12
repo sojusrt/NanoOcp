@@ -59,7 +59,7 @@ public:
     //==============================================================================
     virtual void connectionMade() = 0;
     virtual void connectionLost() = 0;
-    virtual void messageReceived(const juce::MemoryBlock& message) = 0;
+    virtual void messageReceived(const ByteVector& message) = 0;
 
 private:
     //==============================================================================
@@ -74,7 +74,7 @@ private:
     void deleteSocket();
     void connectionMadeInt();
     void connectionLostInt();
-    void deliverDataInt(const juce::MemoryBlock&);
+    void deliverDataInt(const ByteVector&);
     bool readNextMessage();
     int readData(void*, int);
 
