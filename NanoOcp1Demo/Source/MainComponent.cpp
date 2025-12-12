@@ -175,7 +175,7 @@ MainComponent::MainComponent()
 
     // create the nano ocp1 client and fire it up
     m_nanoOcp1Client = std::make_unique<NanoOcp1::NanoOcp1Client>(address, port, true /* synch callbacks */);
-    m_nanoOcp1Client->onDataReceived = [=](const juce::MemoryBlock& message)
+    m_nanoOcp1Client->onDataReceived = [=](const NanoOcp1::ByteVector& message)
     {
         return OnOcp1MessageReceived(message);
     };
@@ -192,7 +192,7 @@ MainComponent::MainComponent()
     m_nanoOcp1Client->start();
 }
 
-bool MainComponent::OnOcp1MessageReceived(const juce::MemoryBlock& message)
+bool MainComponent::OnOcp1MessageReceived(const NanoOcp1::ByteVector& message)
 {
     std::unique_ptr<NanoOcp1::Ocp1Message> msgObj = NanoOcp1::Ocp1Message::UnmarshalOcp1Message(message);
     if (msgObj)
@@ -309,7 +309,7 @@ bool MainComponent::OnOcp1MessageReceived(const juce::MemoryBlock& message)
 
 MainComponent::~MainComponent()
 {
-    m_nanoOcp1Client->onDataReceived = std::function<bool(const MemoryBlock&)>();
+    m_nanoOcp1Client->onDataReceived = std::function<bool(const NanoOcp1::ByteVector&)>();
     m_nanoOcp1Client->onConnectionEstablished = std::function<void()>();
     m_nanoOcp1Client->onConnectionLost = std::function<void()>();
     m_nanoOcp1Client->stop();

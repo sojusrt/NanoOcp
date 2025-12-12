@@ -251,7 +251,7 @@ void Ocp1Connection::connectionLostInt()
 
 struct DataDeliveryMessage : public juce::Message
 {
-    DataDeliveryMessage(std::shared_ptr<SafeActionImpl> ipc, const juce::MemoryBlock& d)
+    DataDeliveryMessage(std::shared_ptr<SafeActionImpl> ipc, const ByteVector& d)
         : safeAction(ipc), data(d)
     {}
 
@@ -264,10 +264,10 @@ struct DataDeliveryMessage : public juce::Message
     }
 
     std::shared_ptr<SafeActionImpl> safeAction;
-    juce::MemoryBlock data;
+    ByteVector data;
 };
 
-void Ocp1Connection::deliverDataInt(const juce::MemoryBlock& data)
+void Ocp1Connection::deliverDataInt(const ByteVector& data)
 {
     jassert(callbackConnectionState);
 
@@ -292,8 +292,8 @@ int Ocp1Connection::readData(void* data, int num)
 bool Ocp1Connection::readNextMessage()
 {
     // Read enough data to fit an OCA header.
-    juce::MemoryBlock messageData((size_t)Ocp1Header::Ocp1HeaderSize);
-    auto bytes = readData(messageData.getData(), Ocp1Header::Ocp1HeaderSize);
+    ByteVector messageData(Ocp1Header::Ocp1HeaderSize);
+    auto bytes = readData(messageData.data(), Ocp1Header::Ocp1HeaderSize);
 
     if (bytes == Ocp1Header::Ocp1HeaderSize)
     {
@@ -302,7 +302,7 @@ bool Ocp1Connection::readNextMessage()
 
         // Resize the MemoryBlock to fit the complete OCA message.
         // NOTE: msgSize does not include the sync byte.
-        messageData.setSize(static_cast<size_t>(tmpHeader.GetMessageSize()) + 1);
+        messageData.resize(static_cast<size_t>(tmpHeader.GetMessageSize()) + 1);
 
         auto readPosition = static_cast<int>(Ocp1Header::Ocp1HeaderSize);
         auto bytesLeft = static_cast<int>(tmpHeader.GetMessageSize() + 1 - Ocp1Header::Ocp1HeaderSize);
@@ -312,7 +312,7 @@ bool Ocp1Connection::readNextMessage()
                 return false;
 
             auto numThisTime = juce::jmin(bytesLeft, 65536);
-            auto bytesIn = readData(juce::addBytesToPointer(messageData.getData(), readPosition), numThisTime);
+            auto bytesIn = readData(messageData.data() + readPosition, numThisTime);
 
             if (bytesIn <= 0)
                 break;
