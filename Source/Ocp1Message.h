@@ -153,11 +153,6 @@ public:
     }
 
     /**
-     * Class constructor which creates a Ocp1Header based on a juce::MemoryBlock.
-     */
-    explicit Ocp1Header(const juce::MemoryBlock& memoryBlock);
-
-    /**
      * Class constructor which creates a Ocp1Header based on a std::vector<std::uint8_t>.
      */
     explicit Ocp1Header(const std::vector<std::uint8_t>& memory);
@@ -291,17 +286,9 @@ public:
      * Convenience method which returns a juce::MemoryBloc representing 
      * the binary contents of the complete message.
      *
-     * @return  A juce::MemoryBlock containing the OCA message including header.
+     * @return  A ByteVector containing the OCA message including header.
      */
     ByteVector GetMemoryBlock();
-
-    /**
-     * Factory method which creates a new Ocp1Message object based on a MemoryBlock.
-     * 
-     * @param[in] receivedData    MemoryBlock containing the received OCA message.
-     * @return  A unique pointer to the unmarshaled Ocp1Message object.
-     */
-    static std::unique_ptr<Ocp1Message> UnmarshalOcp1Message(const juce::MemoryBlock& receivedData);
 
 
     /**

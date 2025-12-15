@@ -85,11 +85,6 @@ Ocp1CommandDefinition* Ocp1CommandDefinition::Clone() const
 // Class Ocp1Header
 //==============================================================================
 
-Ocp1Header::Ocp1Header(const juce::MemoryBlock& memoryBlock)
-    : Ocp1Header(std::vector<std::uint8_t>(memoryBlock.begin(), memoryBlock.end()))
-{
-}
-
 Ocp1Header::Ocp1Header(const std::vector<std::uint8_t>& memory)
     :   m_syncVal(static_cast<std::uint8_t>(0)),
         m_protoVers(static_cast<std::uint16_t>(0)),
@@ -180,12 +175,6 @@ ByteVector Ocp1Message::GetMemoryBlock()
     return GetSerializedData();
 }
 
-std::unique_ptr<Ocp1Message> Ocp1Message::UnmarshalOcp1Message(const juce::MemoryBlock& receivedData)
-{
-    const std::vector<std::uint8_t> convertedData(receivedData.begin(), receivedData.end());
-
-    return UnmarshalOcp1Message(convertedData);
-}
 
 std::unique_ptr<Ocp1Message> Ocp1Message::UnmarshalOcp1Message(const std::vector<std::uint8_t>& receivedData)
 {
