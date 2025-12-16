@@ -293,7 +293,7 @@ public:
      *
      * @return  A juce::MemoryBlock containing the OCA message including header.
      */
-    juce::MemoryBlock GetMemoryBlock();
+    ByteVector GetMemoryBlock();
 
     /**
      * Factory method which creates a new Ocp1Message object based on a MemoryBlock.

@@ -168,12 +168,9 @@ juce::String Ocp1Connection::getConnectedHostName() const
 }
 
 //==============================================================================
-bool Ocp1Connection::sendMessage(const juce::MemoryBlock& message)
+bool Ocp1Connection::sendMessage(const ByteVector& message)
 {
-    juce::MemoryBlock messageData(message.getSize());
-    messageData.copyFrom(message.getData(), 0, message.getSize());
-
-    return writeData(messageData.getData(), (int)messageData.getSize()) == (int)messageData.getSize();
+    return writeData(const_cast<std::uint8_t*>(message.data()), static_cast<int>(message.size())) == message.size();
 }
 
 int Ocp1Connection::writeData(void* data, int dataSize)

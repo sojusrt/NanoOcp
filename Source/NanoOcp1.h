@@ -28,6 +28,7 @@
 
 #include "Ocp1Connection.h"
 #include "Ocp1ConnectionServer.h"
+#include "Ocp1DataTypes.h"
 
 
 namespace NanoOcp1
@@ -51,7 +52,7 @@ public:
     virtual bool stop() = 0;
 
     //==============================================================================
-    virtual bool sendData(const juce::MemoryBlock& data) = 0;
+    virtual bool sendData(const ByteVector& data) = 0;
 
     //==============================================================================
     std::function<bool(const juce::MemoryBlock&)> onDataReceived;
@@ -83,7 +84,7 @@ public:
     bool isRunning();
 
     //==============================================================================
-    bool sendData(const juce::MemoryBlock& data) override;
+    bool sendData(const ByteVector& data) override;
 
     //==============================================================================
     void connectionMade() override;
@@ -112,7 +113,7 @@ public:
     bool stop() override;
 
     //==============================================================================
-    bool sendData(const juce::MemoryBlock& data) override;
+    bool sendData(const ByteVector& data) override;
 
 protected:
     //==============================================================================
