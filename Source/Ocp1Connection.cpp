@@ -170,7 +170,7 @@ juce::String Ocp1Connection::getConnectedHostName() const
 //==============================================================================
 bool Ocp1Connection::sendMessage(const ByteVector& message)
 {
-    return writeData(const_cast<std::uint8_t*>(message.data()), static_cast<int>(message.size())) == message.size();
+    return writeData(const_cast<std::uint8_t*>(message.data()), static_cast<int>(message.size())) == static_cast<int>(message.size());
 }
 
 int Ocp1Connection::writeData(void* data, int dataSize)
@@ -300,7 +300,7 @@ bool Ocp1Connection::readNextMessage()
         // Unmarshal the OCA header using a Ocp1Header helper object.
         Ocp1Header tmpHeader(messageData);
 
-        // Resize the MemoryBlock to fit the complete OCA message.
+        // Resize the ByteVector to fit the complete OCA message.
         // NOTE: msgSize does not include the sync byte.
         messageData.resize(static_cast<size_t>(tmpHeader.GetMessageSize()) + 1);
 

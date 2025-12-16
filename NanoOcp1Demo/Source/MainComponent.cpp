@@ -64,43 +64,43 @@ MainComponent::MainComponent()
             // Send AddSubscription requests
             std::uint32_t handle;
             m_nanoOcp1Client->sendData(NanoOcp1::Ocp1CommandResponseRequired(
-                NanoOcp1::AmpGeneric::dbOcaObjectDef_Config_PotiLevel(1).AddSubscriptionCommand(), handle).GetMemoryBlock());
+                NanoOcp1::AmpGeneric::dbOcaObjectDef_Config_PotiLevel(1).AddSubscriptionCommand(), handle).GetByteVector());
             m_ocaHandleMap.emplace(handle, m_potiLevelObjDef.get());
             DBG("Sent an OCA AddSubscription command with handle " << NanoOcp1::HandleToString(handle));
 
             m_nanoOcp1Client->sendData(NanoOcp1::Ocp1CommandResponseRequired(
-                NanoOcp1::AmpDxDy::dbOcaObjectDef_Settings_PwrOn().AddSubscriptionCommand(), handle).GetMemoryBlock());
+                NanoOcp1::AmpDxDy::dbOcaObjectDef_Settings_PwrOn().AddSubscriptionCommand(), handle).GetByteVector());
             m_ocaHandleMap.emplace(handle, m_pwrOnObjDef.get());
             DBG("Sent an OCA AddSubscription command with handle " << NanoOcp1::HandleToString(handle));
 
             m_nanoOcp1Client->sendData(NanoOcp1::Ocp1CommandResponseRequired(
-                NanoOcp1::DS100::dbOcaObjectDef_Positioning_Source_Enable(1).AddSubscriptionCommand(), handle).GetMemoryBlock());
+                NanoOcp1::DS100::dbOcaObjectDef_Positioning_Source_Enable(1).AddSubscriptionCommand(), handle).GetByteVector());
             m_ocaHandleMap.emplace(handle, m_soundobjectEnableObjDef.get());
             DBG("Sent an OCA AddSubscription command with handle " << NanoOcp1::HandleToString(handle));
 
             m_nanoOcp1Client->sendData(NanoOcp1::Ocp1CommandResponseRequired(
-                NanoOcp1::DS100::dbOcaObjectDef_Positioning_Speaker_Group(1).AddSubscriptionCommand(), handle).GetMemoryBlock());
+                NanoOcp1::DS100::dbOcaObjectDef_Positioning_Speaker_Group(1).AddSubscriptionCommand(), handle).GetByteVector());
             m_ocaHandleMap.emplace(handle, m_speakerGroupObjDef.get());
             DBG("Sent an OCA AddSubscription command with handle " << NanoOcp1::HandleToString(handle));
 
             // Get initial values
-            m_nanoOcp1Client->sendData(NanoOcp1::Ocp1CommandResponseRequired(*m_pwrOnObjDef.get(), handle).GetMemoryBlock());
+            m_nanoOcp1Client->sendData(NanoOcp1::Ocp1CommandResponseRequired(*m_pwrOnObjDef.get(), handle).GetByteVector());
             m_ocaHandleMap.emplace(handle, m_pwrOnObjDef.get());
             DBG("Sent an OCA Get command with handle " << NanoOcp1::HandleToString(handle));
 
-            m_nanoOcp1Client->sendData(NanoOcp1::Ocp1CommandResponseRequired(*m_potiLevelObjDef.get(), handle).GetMemoryBlock());
+            m_nanoOcp1Client->sendData(NanoOcp1::Ocp1CommandResponseRequired(*m_potiLevelObjDef.get(), handle).GetByteVector());
             m_ocaHandleMap.emplace(handle, m_potiLevelObjDef.get());
             DBG("Sent an OCA Get command with handle " << NanoOcp1::HandleToString(handle));
 
-            m_nanoOcp1Client->sendData(NanoOcp1::Ocp1CommandResponseRequired(*m_soundobjectEnableObjDef.get(), handle).GetMemoryBlock());
+            m_nanoOcp1Client->sendData(NanoOcp1::Ocp1CommandResponseRequired(*m_soundobjectEnableObjDef.get(), handle).GetByteVector());
             m_ocaHandleMap.emplace(handle, m_soundobjectEnableObjDef.get());
             DBG("Sent an OCA Get command with handle " << NanoOcp1::HandleToString(handle));
 
-            m_nanoOcp1Client->sendData(NanoOcp1::Ocp1CommandResponseRequired(*m_speakerGroupObjDef.get(), handle).GetMemoryBlock());
+            m_nanoOcp1Client->sendData(NanoOcp1::Ocp1CommandResponseRequired(*m_speakerGroupObjDef.get(), handle).GetByteVector());
             m_ocaHandleMap.emplace(handle, m_speakerGroupObjDef.get());
             DBG("Sent an OCA Get command with handle " << NanoOcp1::HandleToString(handle));
 
-            m_nanoOcp1Client->sendData(NanoOcp1::Ocp1CommandResponseRequired(*m_guidObjDef.get(), handle).GetMemoryBlock());
+            m_nanoOcp1Client->sendData(NanoOcp1::Ocp1CommandResponseRequired(*m_guidObjDef.get(), handle).GetByteVector());
             m_ocaHandleMap.emplace(handle, m_guidObjDef.get());
             DBG("Sent an OCA Get command with handle " << NanoOcp1::HandleToString(handle));
         }
@@ -109,22 +109,22 @@ MainComponent::MainComponent()
             // Send RemoveSubscription requests
             std::uint32_t handle;
             m_nanoOcp1Client->sendData(NanoOcp1::Ocp1CommandResponseRequired(
-                NanoOcp1::AmpGeneric::dbOcaObjectDef_Config_PotiLevel(1).RemoveSubscriptionCommand(), handle).GetMemoryBlock());
+                NanoOcp1::AmpGeneric::dbOcaObjectDef_Config_PotiLevel(1).RemoveSubscriptionCommand(), handle).GetByteVector());
             m_ocaHandleMap.emplace(handle, m_potiLevelObjDef.get());
             DBG("Sent an OCA RemoveSubscription command with handle " << NanoOcp1::HandleToString(handle));
 
             m_nanoOcp1Client->sendData(NanoOcp1::Ocp1CommandResponseRequired(
-                NanoOcp1::AmpDxDy::dbOcaObjectDef_Settings_PwrOn().RemoveSubscriptionCommand(), handle).GetMemoryBlock());
+                NanoOcp1::AmpDxDy::dbOcaObjectDef_Settings_PwrOn().RemoveSubscriptionCommand(), handle).GetByteVector());
             m_ocaHandleMap.emplace(handle, m_pwrOnObjDef.get());
             DBG("Sent an OCA RemoveSubscription command with handle " << NanoOcp1::HandleToString(handle));
 
             m_nanoOcp1Client->sendData(NanoOcp1::Ocp1CommandResponseRequired(
-                NanoOcp1::DS100::dbOcaObjectDef_Positioning_Source_Enable(1).RemoveSubscriptionCommand(), handle).GetMemoryBlock());
+                NanoOcp1::DS100::dbOcaObjectDef_Positioning_Source_Enable(1).RemoveSubscriptionCommand(), handle).GetByteVector());
             m_ocaHandleMap.emplace(handle, m_soundobjectEnableObjDef.get());
             DBG("Sent an OCA RemoveSubscription command with handle " << NanoOcp1::HandleToString(handle));
 
             m_nanoOcp1Client->sendData(NanoOcp1::Ocp1CommandResponseRequired(
-                NanoOcp1::DS100::dbOcaObjectDef_Positioning_Speaker_Group(1).RemoveSubscriptionCommand(), handle).GetMemoryBlock());
+                NanoOcp1::DS100::dbOcaObjectDef_Positioning_Speaker_Group(1).RemoveSubscriptionCommand(), handle).GetByteVector());
             m_ocaHandleMap.emplace(handle, m_speakerGroupObjDef.get());
             DBG("Sent an OCA RemoveSubscription command with handle " << NanoOcp1::HandleToString(handle));
         }
@@ -145,7 +145,7 @@ MainComponent::MainComponent()
     {
         std::uint32_t handle;
         auto cmdDef(NanoOcp1::AmpDxDy::dbOcaObjectDef_Settings_PwrOn().SetValueCommand(0)); // 0 == OFF
-        m_nanoOcp1Client->sendData(NanoOcp1::Ocp1CommandResponseRequired(cmdDef, handle).GetMemoryBlock());
+        m_nanoOcp1Client->sendData(NanoOcp1::Ocp1CommandResponseRequired(cmdDef, handle).GetByteVector());
     };
     addAndMakeVisible(m_powerOffD40Button.get());
 
@@ -155,7 +155,7 @@ MainComponent::MainComponent()
     {
         std::uint32_t handle;
         auto cmdDef(NanoOcp1::AmpDxDy::dbOcaObjectDef_Settings_PwrOn().SetValueCommand(1)); // 1 == ON
-        m_nanoOcp1Client->sendData(NanoOcp1::Ocp1CommandResponseRequired(cmdDef, handle).GetMemoryBlock());
+        m_nanoOcp1Client->sendData(NanoOcp1::Ocp1CommandResponseRequired(cmdDef, handle).GetByteVector());
     };
     addAndMakeVisible(m_powerOnD40Button.get());
 
@@ -167,7 +167,7 @@ MainComponent::MainComponent()
     {
         std::uint32_t handle;
         auto cmdDef(NanoOcp1::AmpGeneric::dbOcaObjectDef_Config_PotiLevel(1).SetValueCommand(m_gainSlider->getValue()));
-        m_nanoOcp1Client->sendData(NanoOcp1::Ocp1CommandResponseRequired(cmdDef, handle).GetMemoryBlock());
+        m_nanoOcp1Client->sendData(NanoOcp1::Ocp1CommandResponseRequired(cmdDef, handle).GetByteVector());
     };
     addAndMakeVisible(m_gainSlider.get());
 

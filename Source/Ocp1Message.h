@@ -283,12 +283,12 @@ public:
     virtual std::vector<std::uint8_t> GetSerializedData() = 0;
 
     /**
-     * Convenience method which returns a juce::MemoryBloc representing 
+     * Convenience method which returns a ByteVector representing
      * the binary contents of the complete message.
      *
      * @return  A ByteVector containing the OCA message including header.
      */
-    ByteVector GetMemoryBlock();
+    ByteVector GetByteVector();
 
 
     /**
